@@ -1,4 +1,4 @@
-name: "Terraform"
+name: "Terraform smm v2"
 
 on:
   workflow_dispatch:
@@ -41,9 +41,14 @@ jobs:
       - name: Aplicar Terraform
         run: terraform apply -auto-approve
       
-      - name: AWS Plan Copy
+      - name: AWS Plan Copy terraform.tfstate 
         id: copyfrom
         run: aws s3 cp terraform.tfstate s3://${{ secrets.BUCKET}}/terraform.tfstate 
+
+      - name: AWS Plan Copy terraform.lock.hcl
+        id: copyfrom-terraform-lock-hcl
+        run: aws s3 cp .terraform.lock.hcl s3://${{ secrets.BUCKET}}/.terraform.lock.hcl
+
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -77,9 +82,14 @@ jobs:
       - name: Ver proveedores
         run: terraform providers
 
-      - name: AWS Plan Copy
-        id: copyfrom
-        run: aws s3 cp s3://${{ secrets.BUCKET}}/terraform.tfstate terraform.tfstate 
+      - name: AWS Plan Copy terraform.tfstate
+        id: copyfromS3-terraform-tfstate-DESTROY
+        run: aws s3 cp s3://${{ secrets.BUCKET}}/terraform.tfstate terraform.tfstate
+
+      - name: AWS Plan Copy terraform.lock.hcl
+        id: copyfromS3-terraform-lock-hcl-DESTROY
+        run: aws s3 cp s3://${{ secrets.BUCKET}}/.terraform.lock.hcl .terraform.lock.hcl
+
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -94,9 +104,13 @@ jobs:
         id: destroy
         run: terraform destroy -auto-approve
       
-      - name: Delete plan file
+      - name: Delete plan file terraform.tfstate
         if: steps.destroy.outcome == 'success'
         run: aws s3 rm s3://${{ secrets.BUCKET}}/terraform.tfstate
+      - name: Delete plan file .terraform.lock.hcl 
+        if: steps.destroy.outcome == 'success'
+        run: aws s3 rm s3://${{ secrets.BUCKET}}/.terraform.lock.hcl 
+
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

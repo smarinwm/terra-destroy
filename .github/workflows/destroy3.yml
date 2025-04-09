@@ -3,7 +3,7 @@ name: "Terraform composite"
 on:
   workflow_dispatch:
     inputs:
-      # Terraform action you want to perform
+      # Terraform action you want to perform # .terraform.lock.hcl
       action:
         description: 'Terraform Action to Perform'
         type: choice
@@ -32,8 +32,8 @@ jobs:
         run: terraform apply -auto-approve
       
       - name: AWS Plan Copy
-        id: copyfrom
-        run: aws s3 cp terraform.tfstate s3://jlq-tf/terraform.tfstate 
+        id: copyfrom-terraform-tfstate-to-s3
+        run: aws s3 cp terraform.tfstate s3://${{ secrets.BUCKET}}/terraform.tfstate 
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

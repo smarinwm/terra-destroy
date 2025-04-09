@@ -31,8 +31,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN}}
-          aws-region: us-east-1
-  
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
       - name: Instalar Terraform
         uses: hashicorp/setup-terraform@v2
   
@@ -48,7 +47,7 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: us-east-1
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
         continue-on-error: true
               
   terraform_destroy:
@@ -67,7 +66,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN}}
-          aws-region: us-east-1
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
       - name: Instalar Terraform
         uses: hashicorp/setup-terraform@v2
@@ -84,7 +83,7 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: us-east-1
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
         continue-on-error: true
 
       - name: Show Destroy plan
@@ -97,9 +96,9 @@ jobs:
       
       - name: Delete plan file
         if: steps.destroy.outcome == 'success'
-        run: aws s3 rm s3://${{ secrets.BUCKET}}/terraform.tfstate 
+        run: aws s3 rm s3://${{ secrets.BUCKET}}/terraform.tfstate
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: us-east-1
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
             
